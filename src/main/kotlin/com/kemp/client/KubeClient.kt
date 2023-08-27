@@ -44,20 +44,20 @@ object KubeClient {
         apiGroup: String?,
         apiVersion: String?,
         resourcePlural: String?,
-        namespace: String = ""
+        namespace: String? = ""
     ): List<DynamicKubernetesObject>? {
         val api = DynamicKubernetesApi(apiGroup, apiVersion, resourcePlural, client)
-        val list = if (namespace.isNotEmpty()) {
-            api.list(namespace)
-        } else {
+        val list = if (namespace.isNullOrEmpty()) {
             api.list()
+        } else {
+            api.list(namespace)
         }
         return list.getItems()
     }
 
     fun listResources(
         resourcePlural: String,
-        namespace: String = ""
+        namespace: String? = ""
     ): List<DynamicKubernetesObject>? {
         val apiResource = findAPIResource(resourcePlural)
         return listResources(apiResource?.group, apiResource?.preferredVersion, resourcePlural, namespace)
@@ -65,7 +65,7 @@ object KubeClient {
 
     fun listResourcesAsStringJsonList(
         resourcePlural: String,
-        namespace: String = ""
+        namespace: String? = ""
     ): String? {
         return listResources(resourcePlural, namespace)?.asStringJsonList()
     }

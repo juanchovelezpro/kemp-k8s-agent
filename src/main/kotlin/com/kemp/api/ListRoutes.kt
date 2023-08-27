@@ -8,7 +8,10 @@ import io.ktor.server.routing.*
 fun Route.listResources() {
 
     get("/{resource}") {
-        val resources = call.parameters["resource"]?.let { KubeClient.listResourcesAsStringJsonList(it) }
+        val queryNamespace = call.request.queryParameters["namespace"]
+        val resources = call.parameters["resource"]?.let {
+            KubeClient.listResourcesAsStringJsonList(it, queryNamespace)
+        }
         call.respondNullable(resources)
     }
 

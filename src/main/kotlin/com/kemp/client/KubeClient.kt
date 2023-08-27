@@ -40,7 +40,7 @@ object KubeClient {
         return serverResources.find { it.resourcePlural == resourcePlural }
     }
 
-    fun listObjects(
+    fun listResources(
         apiGroup: String?,
         apiVersion: String?,
         resourcePlural: String?,
@@ -55,19 +55,19 @@ object KubeClient {
         return list.getItems()
     }
 
-    fun listObjects(
+    fun listResources(
         resourcePlural: String,
         namespace: String = ""
     ): List<DynamicKubernetesObject>? {
         val apiResource = findAPIResource(resourcePlural)
-        return listObjects(apiResource?.group, apiResource?.preferredVersion, resourcePlural, namespace)
+        return listResources(apiResource?.group, apiResource?.preferredVersion, resourcePlural, namespace)
     }
 
-    fun listObjectsAsStringJsonList(
+    fun listResourcesAsStringJsonList(
         resourcePlural: String,
         namespace: String = ""
     ): String? {
-        return listObjects(resourcePlural, namespace)?.asStringJsonList()
+        return listResources(resourcePlural, namespace)?.asStringJsonList()
     }
 
     fun KubernetesApiResponse<DynamicKubernetesListObject>.getItems(): List<DynamicKubernetesObject>? {

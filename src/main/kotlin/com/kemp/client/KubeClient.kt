@@ -4,29 +4,19 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import io.kubernetes.client.Discovery
 import io.kubernetes.client.openapi.ApiClient
-import io.kubernetes.client.openapi.Configuration
 import io.kubernetes.client.openapi.apis.VersionApi
 import io.kubernetes.client.openapi.models.VersionInfo
-import io.kubernetes.client.util.ClientBuilder
 import io.kubernetes.client.util.generic.KubernetesApiResponse
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
 
-object KubeClient {
+class KubeClient(val client: ApiClient) {
 
-    private val client: ApiClient = ClientBuilder.defaultClient()
-    private val discovery: Discovery
-    private val versionApi: VersionApi
-    private val serverResources: Set<Discovery.APIResource>
-    val gson = Gson()
-
-    init {
-        Configuration.setDefaultApiClient(client)
-        discovery = Discovery()
-        versionApi = VersionApi()
-        serverResources = getServerResources()
-    }
+    private val discovery: Discovery = Discovery(client)
+    private val versionApi: VersionApi = VersionApi(client)
+    private val serverResources: Set<Discovery.APIResource> = getServerResources()
+    private val gson = Gson()
 
     fun getServerVersion(): VersionInfo {
         return versionApi.code
@@ -86,10 +76,6 @@ object KubeClient {
 
     fun List<DynamicKubernetesObject>.asStringJsonList(): String {
         return this.asJsonList().toString()
-    }
-
-    fun Any.toJson(): String {
-        return gson.toJson(this)
     }
 
 }

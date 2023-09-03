@@ -4,7 +4,7 @@ info:
   description: "com_kemp_k8s_api API"
   version: "1.0.0"
 servers:
-  - url: "https://com_kemp_k8s_api"
+- url: "https://com_kemp_k8s_api"
 paths:
   /:
     get:
@@ -20,140 +20,16 @@ paths:
                 Example#1:
                   value: "Kubernetes API developed in Kotlin using the Official Kubernetes\
                     \ Java Client"
-  /api/{cluster}/apiresources:
+  /api/clusters:
     get:
       description: ""
-      parameters:
-        - name: "cluster"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
       responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "200":
-          description: "OK"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-  /api/{cluster}/version:
-    get:
-      description: ""
-      parameters:
-        - name: "cluster"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "200":
-          description: "OK"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-  /api/cluster/{clusterName}/{resource}/{resourceName}:
-    delete:
-      description: ""
-      parameters:
-        - name: "namespace"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "clusterName"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-        - name: "resource"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-        - name: "resourceName"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "200":
-          description: "OK"
-          content:
-            text/plain:
-              schema:
-                $ref: "#/components/schemas/DynamicKubernetesObject"
-    get:
-      description: ""
-      parameters:
-        - name: "namespace"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "resourceName"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-        - name: "clusterName"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-        - name: "resource"
-          in: "path"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-                Example#2:
-                  value: ""
         "200":
           description: "OK"
           content:
             application/json:
               schema:
                 type: "string"
-  /api/manager/cluster:
-    delete:
-      description: ""
     post:
       description: ""
       requestBody:
@@ -187,44 +63,177 @@ paths:
               examples:
                 Example#1:
                   value: ""
+  /api/clusters/{cluster}:
+    delete:
+      description: ""
+      parameters:
+      - name: "cluster"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+  /api/clusters/{cluster}/{resource}/{resourceName}:
+    delete:
+      description: ""
+      parameters:
+      - name: "namespace"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "cluster"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "resource"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "resourceName"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
                 Example#2:
                   value: ""
-  /api/manager/clusters:
-    get:
-      description: ""
-      responses:
         "200":
           description: "OK"
           content:
             text/plain:
               schema:
-                type: "array"
-                items:
-                  type: "string"
+                $ref: "#/components/schemas/DynamicKubernetesObject"
+    get:
+      description: ""
+      parameters:
+      - name: "namespace"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "resourceName"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "cluster"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      - name: "resource"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+                Example#4:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+  /api/clusters/{cluster}/api-resources:
+    get:
+      description: ""
+      parameters:
+      - name: "cluster"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+  /api/clusters/{cluster}/version:
+    get:
+      description: ""
+      parameters:
+      - name: "cluster"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
 components:
   schemas:
-    JsonObject:
-      type: "object"
-      properties: { }
-    DynamicKubernetesObject:
-      type: "object"
-      properties:
-        raw:
-          $ref: "#/components/schemas/JsonObject"
     KubeClientEntity:
       type: "object"
       properties:
         name:
           type: "string"
+        authType:
+          type: "string"
+          enum:
+          - "KUBECONFIG"
+          - "TOKEN"
+          - "SA"
+          - "LOCAL"
         url:
           type: "string"
         token:
           type: "string"
         kubeConfig:
           type: "string"
-        withToken:
-          type: "boolean"
-        withServiceAccount:
-          type: "boolean"
-        withKubeConfig:
-          type: "boolean"
+    JsonObject:
+      type: "object"
+      properties: {}
+    DynamicKubernetesObject:
+      type: "object"
+      properties:
+        raw:
+          $ref: "#/components/schemas/JsonObject"

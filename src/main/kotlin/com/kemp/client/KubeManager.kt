@@ -14,12 +14,11 @@ object KubeManager {
         return clients.keys
     }
 
-    private fun addClient(name: String, client: ApiClient): Boolean {
+    private fun addClient(name: String, client: ApiClient) {
         return if (clients.containsKey(name)) {
-            throw Exception("Cluster $name already exists!")
+            throw GenericException("Cluster $name already exists!", 400, "")
         } else {
             clients[name] = KubeClient(client)
-            true
         }
     }
 
@@ -28,31 +27,31 @@ object KubeManager {
         url: String,
         token: String,
         validateSsl: Boolean = false
-    ): Boolean {
+    ) {
         val client = Config.fromToken(url, token, validateSsl)
-        return addClient(name, client)
+        addClient(name, client)
     }
 
     fun addClientWithKubeConfig(
         name: String,
         kubeConfig: String
-    ): Boolean {
+    ) {
         val client = Config.fromConfig(kubeConfig)
-        return addClient(name, client)
+        addClient(name, client)
     }
 
     fun addClientWithClusterSA(
         name: String,
-    ): Boolean {
+    ) {
         val client = Config.fromCluster()
-        return addClient(name, client)
+        addClient(name, client)
     }
 
     fun addLocalClient(
         name: String
-    ): Boolean {
+    ) {
         val client = ClientBuilder.defaultClient()
-        return addClient(name, client)
+        addClient(name, client)
     }
 
     fun getClient(name: String): KubeClient {

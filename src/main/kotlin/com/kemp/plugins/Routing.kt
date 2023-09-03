@@ -26,7 +26,9 @@ fun Application.configureRouting() {
     }
     routing {
         info()
-        managerActions()
-        resources()
+        route("/api/clusters") {
+            managerActions()
+            resources()
+        }
     }
 }

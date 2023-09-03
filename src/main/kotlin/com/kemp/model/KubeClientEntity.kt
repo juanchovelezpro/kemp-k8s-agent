@@ -1,8 +1,5 @@
 package com.kemp.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class KubeClientEntity(
     val name: String,
     val url: String = "",

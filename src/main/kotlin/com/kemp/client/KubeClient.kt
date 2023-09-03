@@ -76,13 +76,13 @@ class KubeClient(val client: ApiClient) {
     /**
      * This a mimic of "kubectl get resource resourceName"
      */
-    fun getResource(name: String?, resourcePlural: String?, namespace: String? = ""): DynamicKubernetesObject? {
+    fun getResource(name: String, resourcePlural: String, namespace: String? = ""): DynamicKubernetesObject? {
         val resource = findAPIResource(resourcePlural)
         val api = DynamicKubernetesApi(resource?.group, resource?.preferredVersion, resourcePlural, client)
         return if (namespace.isNullOrEmpty()) api.get(name).getItem() else api.get(namespace, name).getItem()
     }
 
-    fun getResourceAsJson(name: String?, resourcePlural: String?, namespace: String? = ""): String? {
+    fun getResourceAsJson(name: String, resourcePlural: String, namespace: String? = ""): String? {
         return getResource(name, resourcePlural, namespace)?.asStringJson()
     }
 

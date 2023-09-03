@@ -12,13 +12,13 @@ fun Route.info() {
     }
     get("/api/{cluster}/version") {
         val version = call.parameters["cluster"]?.let {
-            KubeManager.getClient(it)?.getServerVersion()?.toJson()
+            KubeManager.getClient(it).getServerVersion().toJson()
         }
         call.respondNullable(version)
     }
     get("/api/{cluster}/apiresources") {
         val serverResources = call.parameters["cluster"]?.let {
-            KubeManager.getClient(it)?.getServerResources()?.toJson()
+            KubeManager.getClient(it).getServerResources().toJson()
         }
         call.respondNullable(serverResources)
     }

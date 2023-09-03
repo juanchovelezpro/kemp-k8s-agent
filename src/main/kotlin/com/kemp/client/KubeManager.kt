@@ -1,6 +1,7 @@
 package com.kemp.client
 
 import com.google.gson.Gson
+import com.kemp.model.GenericException
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.util.ClientBuilder
 import io.kubernetes.client.util.Config
@@ -17,7 +18,7 @@ object KubeManager {
 
     private fun addClient(name: String, client: ApiClient): Boolean {
         return if (clients.containsKey(name)) {
-            false
+            throw Exception("Cluster $name already exists!")
         } else {
             clients[name] = KubeClient(client)
             true
@@ -56,8 +57,8 @@ object KubeManager {
         return addClient(name, client)
     }
 
-    fun getClient(name: String): KubeClient? {
-        return clients[name]
+    fun getClient(name: String): KubeClient {
+        return clients[name] ?: throw GenericException("Cluster $name does not exist", 400, "")
     }
 
     fun removeClient(

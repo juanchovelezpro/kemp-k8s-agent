@@ -9,31 +9,37 @@ import io.ktor.server.routing.*
 
 fun Route.managerActions() {
 
-    get("/api/manager/clusters") {
-        call.respondNullable(KubeManager.listClients())
-    }
+    route("/api/manager") {
+        get("/clusters") {
+            call.respondNullable(KubeManager.listClients())
+        }
+        route("/cluster") {
+            post {
+                val kubeClientEntity = call.receive<KubeClientEntity>()
+                val response = if (kubeClientEntity.withToken) {
+                    KubeManager.addClientWithToken(kubeClientEntity.name, kubeClientEntity.url, kubeClientEntity.token)
+                } else if (kubeClientEntity.withServiceAccount) {
+                    KubeManager.addClientWithClusterSA(kubeClientEntity.name)
+                } else if (kubeClientEntity.withKubeConfig) {
+                    KubeManager.addClientWithKubeConfig(kubeClientEntity.name, kubeClientEntity.kubeConfig)
+                } else {
+                    KubeManager.addLocalClient(kubeClientEntity.name)
+                }
 
-    post("/api/manager/cluster") {
-        val kubeClientEntity = call.receive<KubeClientEntity>()
-        val response = if (kubeClientEntity.withToken) {
-            KubeManager.addClientWithToken(kubeClientEntity.name, kubeClientEntity.url, kubeClientEntity.token)
-        } else if (kubeClientEntity.withServiceAccount) {
-            KubeManager.addClientWithClusterSA(kubeClientEntity.name)
-        } else if (kubeClientEntity.withKubeConfig) {
-            KubeManager.addClientWithKubeConfig(kubeClientEntity.name, kubeClientEntity.kubeConfig)
-        } else {
-            KubeManager.addLocalClient(kubeClientEntity.name)
+                if (response) {
+                    call.respond("Client ${kubeClientEntity.name} was added")
+                } else {
+                    call.respond("Client ${kubeClientEntity.name} could not be added")
+                }
+            }
+            delete {
+
+            }
         }
 
-        if (response) {
-            call.respond("Client ${kubeClientEntity.name} was added")
-        } else {
-            call.respond("Client ${kubeClientEntity.name} could not be added")
-        }
-    }
 
-    delete("/api/manager/cluster") {
 
     }
+
 
 }

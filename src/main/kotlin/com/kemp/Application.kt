@@ -1,6 +1,9 @@
 package com.kemp
 
-import com.kemp.plugins.*
+import com.kemp.plugins.configureHTTP
+import com.kemp.plugins.configureMonitoring
+import com.kemp.plugins.configureRouting
+import com.kemp.plugins.configureSerialization
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*

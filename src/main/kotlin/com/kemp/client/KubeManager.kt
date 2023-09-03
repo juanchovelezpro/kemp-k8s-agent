@@ -1,6 +1,5 @@
 package com.kemp.client
 
-import com.google.gson.Gson
 import com.kemp.model.GenericException
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.util.ClientBuilder
@@ -10,7 +9,6 @@ object KubeManager {
 
     // How to persistent data ? Database or directly as kubernetes objects ? or this should be implemented depending on the deployment type ?
     private val clients = HashMap<String, KubeClient>()
-    private val gson = Gson()
 
     fun listClients(): Set<String> {
         return clients.keys
@@ -65,10 +63,6 @@ object KubeManager {
         name: String
     ): KubeClient? {
         return clients.remove(name)
-    }
-
-    fun Any.toJson(): String {
-        return gson.toJson(this)
     }
 
 }

@@ -1,6 +1,7 @@
 package com.kemp.api
 
 import com.kemp.client.KubeManager
+import com.kemp.model.KubeAuthType
 import com.kemp.model.KubeClientEntity
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -16,30 +17,34 @@ fun Route.managerActions() {
         route("/cluster") {
             post {
                 val kubeClientEntity = call.receive<KubeClientEntity>()
-                val response = if (kubeClientEntity.withToken) {
-                    KubeManager.addClientWithToken(kubeClientEntity.name, kubeClientEntity.url, kubeClientEntity.token)
-                } else if (kubeClientEntity.withServiceAccount) {
-                    KubeManager.addClientWithClusterSA(kubeClientEntity.name)
-                } else if (kubeClientEntity.withKubeConfig) {
-                    KubeManager.addClientWithKubeConfig(kubeClientEntity.name, kubeClientEntity.kubeConfig)
-                } else {
-                    KubeManager.addLocalClient(kubeClientEntity.name)
+                when (kubeClientEntity.authType) {
+                    KubeAuthType.TOKEN -> {
+                        KubeManager.addClientWithToken(
+                            kubeClientEntity.name,
+                            kubeClientEntity.url,
+                            kubeClientEntity.token
+                        )
+                    }
+
+                    KubeAuthType.SA -> {
+                        KubeManager.addClientWithClusterSA(kubeClientEntity.name)
+                    }
+
+                    KubeAuthType.KUBECONFIG -> {
+                        KubeManager.addClientWithKubeConfig(kubeClientEntity.name, kubeClientEntity.kubeConfig)
+                    }
+
+                    KubeAuthType.LOCAL -> {
+                        KubeManager.addLocalClient(kubeClientEntity.name)
+                    }
                 }
 
-                if (response) {
-                    call.respond("Client ${kubeClientEntity.name} was added")
-                } else {
-                    call.respond("Client ${kubeClientEntity.name} could not be added")
-                }
+                call.respond("Client ${kubeClientEntity.name} was added")
+
             }
             delete {
 
             }
         }
-
-
-
     }
-
-
 }

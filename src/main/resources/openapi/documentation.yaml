@@ -4,7 +4,7 @@ info:
   description: "com_kemp_k8s_api API"
   version: "1.0.0"
 servers:
-- url: "https://com_kemp_k8s_api"
+  - url: "https://com_kemp_k8s_api"
 paths:
   /:
     get:
@@ -24,11 +24,11 @@ paths:
     get:
       description: ""
       parameters:
-      - name: "cluster"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "cluster"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "500":
           description: "Internal Server Error"
@@ -49,11 +49,11 @@ paths:
     get:
       description: ""
       parameters:
-      - name: "cluster"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "cluster"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "500":
           description: "Internal Server Error"
@@ -74,26 +74,26 @@ paths:
     delete:
       description: ""
       parameters:
-      - name: "namespace"
-        in: "query"
-        required: false
-        schema:
-          type: "string"
-      - name: "clusterName"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "resource"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "resourceName"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "namespace"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "clusterName"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "resource"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "resourceName"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "500":
           description: "Internal Server Error"
@@ -113,26 +113,26 @@ paths:
     get:
       description: ""
       parameters:
-      - name: "namespace"
-        in: "query"
-        required: false
-        schema:
-          type: "string"
-      - name: "resourceName"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "clusterName"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "resource"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "namespace"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "resourceName"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "clusterName"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "resource"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "500":
           description: "Internal Server Error"
@@ -205,7 +205,7 @@ components:
   schemas:
     JsonObject:
       type: "object"
-      properties: {}
+      properties: { }
     DynamicKubernetesObject:
       type: "object"
       properties:

@@ -1,6 +1,8 @@
 package com.kemp.api
 
 import com.kemp.client.KubeManager
+import com.kemp.utils.asStringJson
+import com.kemp.utils.asStringJsonList
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -16,9 +18,9 @@ fun Route.resources() {
                 val resources = call.parameters["clusterName"]?.let { cluster ->
                     call.parameters["resource"]?.let { resource ->
                         if (name.isNullOrEmpty()) {
-                            KubeManager.getClient(cluster).listResourcesAsStringJsonList(resource, namespace)
+                            KubeManager.getClient(cluster).listResources(resource, namespace)?.asStringJsonList()
                         } else {
-                            KubeManager.getClient(cluster).getResourceAsJson(name, resource, namespace)
+                            KubeManager.getClient(cluster).getResource(name, resource, namespace)?.asStringJson()
                         }
                     }
                 }

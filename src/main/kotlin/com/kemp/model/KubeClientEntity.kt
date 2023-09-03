@@ -2,10 +2,8 @@ package com.kemp.model
 
 data class KubeClientEntity(
     val name: String,
+    val authType: KubeAuthType,
     val url: String = "",
     val token: String = "",
-    val kubeConfig: String = "",
-    val withToken: Boolean = false,
-    val withServiceAccount: Boolean = false,
-    val withKubeConfig: Boolean = false
+    val kubeConfig: String = ""
 )

@@ -1,5 +1,6 @@
 package com.kemp.utils
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import io.kubernetes.client.util.generic.KubernetesApiResponse
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject
@@ -29,4 +30,8 @@ fun DynamicKubernetesObject.asJsonObject(): JsonObject {
 
 fun DynamicKubernetesObject.asStringJson(): String {
     return this.asJsonObject().toString()
+}
+
+fun Any.toJson(): String {
+    return Gson().toJson(this)
 }

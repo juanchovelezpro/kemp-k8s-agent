@@ -1,8 +1,6 @@
 package com.kemp.client
 
 import com.google.gson.JsonParser
-import com.kemp.utils.asStringJson
-import com.kemp.utils.asStringJsonList
 import com.kemp.utils.getItem
 import com.kemp.utils.getItems
 import io.kubernetes.client.Discovery
@@ -67,31 +65,24 @@ class KubeClient(val client: ApiClient) {
         return listResources(apiResource, namespace)
     }
 
-    fun listResourcesAsStringJsonList(
-        resourcePlural: String,
-        namespace: String? = ""
-    ): String? {
-        return listResources(resourcePlural, namespace)?.asStringJsonList()
-    }
-
-    fun createResource(json: String, resourcePlural: String) {
+    /**
+     * This is a mimic of "kubectl create resource my-resource.yaml"
+     */
+    fun createResource(json: String, resourcePlural: String): DynamicKubernetesObject? {
         val resource = findAPIResource(resourcePlural)
         val api = DynamicKubernetesApi(resource?.group, resource?.preferredVersion, resourcePlural, client)
         val jsonObject = JsonParser.parseString(json).asJsonObject
-        api.create(DynamicKubernetesObject(jsonObject))
+        val result = api.create(DynamicKubernetesObject(jsonObject))
+        return if (result.isSuccess) result.getItem() else throw Exception("Error creating object ${result.getItem()?.metadata?.name}")
     }
 
     /**
-     * This a mimic of "kubectl get resource resourceName"
+     * This is a mimic of "kubectl get resource resourceName"
      */
     fun getResource(name: String, resourcePlural: String, namespace: String? = ""): DynamicKubernetesObject? {
         val resource = findAPIResource(resourcePlural)
         val api = DynamicKubernetesApi(resource?.group, resource?.preferredVersion, resourcePlural, client)
         return if (namespace.isNullOrEmpty()) api.get(name).getItem() else api.get(namespace, name).getItem()
-    }
-
-    fun getResourceAsJson(name: String, resourcePlural: String, namespace: String? = ""): String? {
-        return getResource(name, resourcePlural, namespace)?.asStringJson()
     }
 
     /**

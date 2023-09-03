@@ -747,11 +747,11 @@
                     <li data-group="Default" data-name="apiClusterApiresourcesGet" class="">
                       <a href="#api-Default-apiClusterApiresourcesGet">apiClusterApiresourcesGet</a>
                     </li>
-                    <li data-group="Default" data-name="apiClusterClusterNameResourceGet" class="">
-                      <a href="#api-Default-apiClusterClusterNameResourceGet">apiClusterClusterNameResourceGet</a>
-                    </li>
                     <li data-group="Default" data-name="apiClusterClusterNameResourceResourceNameDelete" class="">
                       <a href="#api-Default-apiClusterClusterNameResourceResourceNameDelete">apiClusterClusterNameResourceResourceNameDelete</a>
+                    </li>
+                    <li data-group="Default" data-name="apiClusterClusterNameResourceResourceNameGet" class="">
+                      <a href="#api-Default-apiClusterClusterNameResourceResourceNameGet">apiClusterClusterNameResourceResourceNameGet</a>
                     </li>
                     <li data-group="Default" data-name="apiClusterVersionGet" class="">
                       <a href="#api-Default-apiClusterVersionGet">apiClusterVersionGet</a>
@@ -1128,440 +1128,6 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-apiClusterApiresourcesGet-200-schema-data' type='hidden' value=''></input>
-                                </div>
-                            </div>
-
-                        </article>
-                      </div>
-                      <hr>
-                    <div id="api-Default-apiClusterClusterNameResourceGet">
-                      <article id="api-Default-apiClusterClusterNameResourceGet-0" data-group="User" data-name="apiClusterClusterNameResourceGet" data-version="0">
-                        <div class="pull-left">
-                          <h1>apiClusterClusterNameResourceGet</h1>
-                          <p></p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked"></p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/cluster/{clusterName}/{resource}</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Default-apiClusterClusterNameResourceGet-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceGet-0-python">Python</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Default-apiClusterClusterNameResourceGet-0-curl">
-                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
--H "Accept: text/plain,application/json"\
-"https://com_kemp_k8s_api/api/cluster/{clusterName}/{resource}?namespace=&name="</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.DefaultApi;
-
-import java.io.File;
-import java.util.*;
-
-public class DefaultApiExample {
-
-    public static void main(String[] args) {
-        
-        DefaultApi apiInstance = new DefaultApi();
-        String clusterName = clusterName_example; // String | 
-        String resource = resource_example; // String | 
-        String namespace = namespace_example; // String | 
-        String name = name_example; // String | 
-        try {
-            'String' result = apiInstance.apiClusterClusterNameResourceGet(clusterName, resource, namespace, name);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#apiClusterClusterNameResourceGet");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
-
-public class DefaultApiExample {
-
-    public static void main(String[] args) {
-        DefaultApi apiInstance = new DefaultApi();
-        String clusterName = clusterName_example; // String | 
-        String resource = resource_example; // String | 
-        String namespace = namespace_example; // String | 
-        String name = name_example; // String | 
-        try {
-            'String' result = apiInstance.apiClusterClusterNameResourceGet(clusterName, resource, namespace, name);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#apiClusterClusterNameResourceGet");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *clusterName = clusterName_example; // 
-String *resource = resource_example; // 
-String *namespace = namespace_example; //  (optional)
-String *name = name_example; //  (optional)
-
-DefaultApi *apiInstance = [[DefaultApi alloc] init];
-
-[apiInstance apiClusterClusterNameResourceGetWith:clusterName
-    resource:resource
-    namespace:namespace
-    name:name
-              completionHandler: ^('String' output, NSError* error) {
-                            if (output) {
-                                NSLog(@"%@", output);
-                            }
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var ComKempK8sApiApi = require('com_kemp_k8s_api_api');
-
-var api = new ComKempK8sApiApi.DefaultApi()
-var clusterName = clusterName_example; // {{String}} 
-var resource = resource_example; // {{String}} 
-var opts = { 
-  'namespace': namespace_example, // {{String}} 
-  'name': name_example // {{String}} 
-};
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-};
-api.apiClusterClusterNameResourceGet(clusterName, resource, opts, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class apiClusterClusterNameResourceGetExample
-    {
-        public void main()
-        {
-
-            var apiInstance = new DefaultApi();
-            var clusterName = clusterName_example;  // String | 
-            var resource = resource_example;  // String | 
-            var namespace = namespace_example;  // String |  (optional) 
-            var name = name_example;  // String |  (optional) 
-
-            try
-            {
-                'String' result = apiInstance.apiClusterClusterNameResourceGet(clusterName, resource, namespace, name);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling DefaultApi.apiClusterClusterNameResourceGet: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-$api_instance = new Swagger\Client\ApiDefaultApi();
-$clusterName = clusterName_example; // String | 
-$resource = resource_example; // String | 
-$namespace = namespace_example; // String | 
-$name = name_example; // String | 
-
-try {
-    $result = $api_instance->apiClusterClusterNameResourceGet($clusterName, $resource, $namespace, $name);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling DefaultApi->apiClusterClusterNameResourceGet: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::DefaultApi;
-
-my $api_instance = WWW::SwaggerClient::DefaultApi->new();
-my $clusterName = clusterName_example; # String | 
-my $resource = resource_example; # String | 
-my $namespace = namespace_example; # String | 
-my $name = name_example; # String | 
-
-eval { 
-    my $result = $api_instance->apiClusterClusterNameResourceGet(clusterName => $clusterName, resource => $resource, namespace => $namespace, name => $name);
-    print Dumper($result);
-};
-if ($@) {
-    warn "Exception when calling DefaultApi->apiClusterClusterNameResourceGet: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceGet-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# create an instance of the API class
-api_instance = swagger_client.DefaultApi()
-clusterName = clusterName_example # String | 
-resource = resource_example # String | 
-namespace = namespace_example # String |  (optional)
-name = name_example # String |  (optional)
-
-try: 
-    api_response = api_instance.api_cluster_cluster_name_resource_get(clusterName, resource, namespace=namespace, name=name)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling DefaultApi->apiClusterClusterNameResourceGet: %s\n" % e)</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Parameters</h2>
-
-                            <div class="methodsubtabletitle">Path parameters</div>
-                            <table id="methodsubtable">
-                                <tr>
-                                  <th width="150px">Name</th>
-                                  <th>Description</th>
-                                </tr>
-                                  <tr><td style="width:150px;">clusterName*</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_apiClusterClusterNameResourceGet_clusterName">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      String
-                                                  </span>
-                                  
-                                              </div>
-                                                  <div class="inner required">
-                                                      Required
-                                                  </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                                  <tr><td style="width:150px;">resource*</td>
-                                  <td>
-                                  
-                                  
-                                      <div id="d2e199_apiClusterClusterNameResourceGet_resource">
-                                          <div class="json-schema-view">
-                                              <div class="primitive">
-                                                  <span class="type">
-                                                      String
-                                                  </span>
-                                  
-                                              </div>
-                                                  <div class="inner required">
-                                                      Required
-                                                  </div>
-                                          </div>
-                                      </div>
-                                  </td>
-                                  </tr>
-                            </table>
-
-
-
-
-                            <div class="methodsubtabletitle">Query parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                <tr><td style="width:150px;">namespace</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_apiClusterClusterNameResourceGet_namespace">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">name</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_apiClusterClusterNameResourceGet_name">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                            </table>
-
-                          <h2>Responses</h2>
-                            <h3> Status: 500 - Internal Server Error </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-apiClusterClusterNameResourceGet-500-schema">Schema</a>
-                                </li>
-
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-apiClusterClusterNameResourceGet-500-schema">
-                                  <div id='responses-apiClusterClusterNameResourceGet-500-schema-500' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
-                                    <script>
-                                      $(document).ready(function() {
-                                        var schemaWrapper = {
-  "description" : "Internal Server Error",
-  "content" : {
-    "text/plain" : {
-      "schema" : {
-        "type" : "string",
-        "x-content-type" : "text/plain"
-      },
-      "examples" : {
-        "Example#1" : {
-          "value" : ""
-        },
-        "Example#2" : {
-          "value" : ""
-        }
-      }
-    }
-  }
-};
-                                        var schema = schemaWrapper.content["text/plain"].schema;
-                                        if (schema.$ref != null) {
-                                          schema = defsParser.$refs.get(schema.$ref);
-                                        } else {
-                                          schemaWrapper.components = {};
-                                          schemaWrapper.components.schemas = Object.assign({}, defs);
-                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                            console.log(err);
-                                          });
-                                        }
-
-                                        //console.log(JSON.stringify(schema));
-                                        var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-apiClusterClusterNameResourceGet-500-schema-data').val(stringify(schema));
-                                        var result = $('#responses-apiClusterClusterNameResourceGet-500-schema-500');
-                                        result.empty();
-                                        result.append(view.render());
-                                      });
-                                    </script>
-                                  </div>
-                                  <input id='responses-apiClusterClusterNameResourceGet-500-schema-data' type='hidden' value=''></input>
-                                </div>
-                            </div>
-
-                            <h3> Status: 200 - OK </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-apiClusterClusterNameResourceGet-200-schema">Schema</a>
-                                </li>
-
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-apiClusterClusterNameResourceGet-200-schema">
-                                  <div id='responses-apiClusterClusterNameResourceGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
-                                    <script>
-                                      $(document).ready(function() {
-                                        var schemaWrapper = {
-  "description" : "OK",
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "type" : "string",
-        "x-content-type" : "application/json"
-      }
-    }
-  }
-};
-                                        var schema = schemaWrapper.content["application/json"].schema;
-                                        if (schema.$ref != null) {
-                                          schema = defsParser.$refs.get(schema.$ref);
-                                        } else {
-                                          schemaWrapper.components = {};
-                                          schemaWrapper.components.schemas = Object.assign({}, defs);
-                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                            console.log(err);
-                                          });
-                                        }
-
-                                        //console.log(JSON.stringify(schema));
-                                        var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-apiClusterClusterNameResourceGet-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-apiClusterClusterNameResourceGet-200-schema-200');
-                                        result.empty();
-                                        result.append(view.render());
-                                      });
-                                    </script>
-                                  </div>
-                                  <input id='responses-apiClusterClusterNameResourceGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
@@ -1995,6 +1561,443 @@ except ApiException as e:
                                     </script>
                                   </div>
                                   <input id='responses-apiClusterClusterNameResourceResourceNameDelete-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Default-apiClusterClusterNameResourceResourceNameGet">
+                      <article id="api-Default-apiClusterClusterNameResourceResourceNameGet-0" data-group="User" data-name="apiClusterClusterNameResourceResourceNameGet" data-version="0">
+                        <div class="pull-left">
+                          <h1>apiClusterClusterNameResourceResourceNameGet</h1>
+                          <p></p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/cluster/{clusterName}/{resource}/{resourceName}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Default-apiClusterClusterNameResourceResourceNameGet-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: text/plain,application/json"\
+"https://com_kemp_k8s_api/api/cluster/{clusterName}/{resource}/{resourceName}?namespace="</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.DefaultApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        
+        DefaultApi apiInstance = new DefaultApi();
+        String resourceName = resourceName_example; // String | 
+        String clusterName = clusterName_example; // String | 
+        String resource = resource_example; // String | 
+        String namespace = namespace_example; // String | 
+        try {
+            'String' result = apiInstance.apiClusterClusterNameResourceResourceNameGet(resourceName, clusterName, resource, namespace);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#apiClusterClusterNameResourceResourceNameGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        DefaultApi apiInstance = new DefaultApi();
+        String resourceName = resourceName_example; // String | 
+        String clusterName = clusterName_example; // String | 
+        String resource = resource_example; // String | 
+        String namespace = namespace_example; // String | 
+        try {
+            'String' result = apiInstance.apiClusterClusterNameResourceResourceNameGet(resourceName, clusterName, resource, namespace);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#apiClusterClusterNameResourceResourceNameGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *resourceName = resourceName_example; // 
+String *clusterName = clusterName_example; // 
+String *resource = resource_example; // 
+String *namespace = namespace_example; //  (optional)
+
+DefaultApi *apiInstance = [[DefaultApi alloc] init];
+
+[apiInstance apiClusterClusterNameResourceResourceNameGetWith:resourceName
+    clusterName:clusterName
+    resource:resource
+    namespace:namespace
+              completionHandler: ^('String' output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ComKempK8sApiApi = require('com_kemp_k8s_api_api');
+
+var api = new ComKempK8sApiApi.DefaultApi()
+var resourceName = resourceName_example; // {{String}} 
+var clusterName = clusterName_example; // {{String}} 
+var resource = resource_example; // {{String}} 
+var opts = { 
+  'namespace': namespace_example // {{String}} 
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.apiClusterClusterNameResourceResourceNameGet(resourceName, clusterName, resource, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class apiClusterClusterNameResourceResourceNameGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new DefaultApi();
+            var resourceName = resourceName_example;  // String | 
+            var clusterName = clusterName_example;  // String | 
+            var resource = resource_example;  // String | 
+            var namespace = namespace_example;  // String |  (optional) 
+
+            try
+            {
+                'String' result = apiInstance.apiClusterClusterNameResourceResourceNameGet(resourceName, clusterName, resource, namespace);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling DefaultApi.apiClusterClusterNameResourceResourceNameGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiDefaultApi();
+$resourceName = resourceName_example; // String | 
+$clusterName = clusterName_example; // String | 
+$resource = resource_example; // String | 
+$namespace = namespace_example; // String | 
+
+try {
+    $result = $api_instance->apiClusterClusterNameResourceResourceNameGet($resourceName, $clusterName, $resource, $namespace);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling DefaultApi->apiClusterClusterNameResourceResourceNameGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::DefaultApi;
+
+my $api_instance = WWW::SwaggerClient::DefaultApi->new();
+my $resourceName = resourceName_example; # String | 
+my $clusterName = clusterName_example; # String | 
+my $resource = resource_example; # String | 
+my $namespace = namespace_example; # String | 
+
+eval { 
+    my $result = $api_instance->apiClusterClusterNameResourceResourceNameGet(resourceName => $resourceName, clusterName => $clusterName, resource => $resource, namespace => $namespace);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling DefaultApi->apiClusterClusterNameResourceResourceNameGet: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-apiClusterClusterNameResourceResourceNameGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.DefaultApi()
+resourceName = resourceName_example # String | 
+clusterName = clusterName_example # String | 
+resource = resource_example # String | 
+namespace = namespace_example # String |  (optional)
+
+try: 
+    api_response = api_instance.api_cluster_cluster_name_resource_resource_name_get(resourceName, clusterName, resource, namespace=namespace)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling DefaultApi->apiClusterClusterNameResourceResourceNameGet: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">resourceName*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_apiClusterClusterNameResourceResourceNameGet_resourceName">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">clusterName*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_apiClusterClusterNameResourceResourceNameGet_clusterName">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                                  <tr><td style="width:150px;">resource*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_apiClusterClusterNameResourceResourceNameGet_resource">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      String
+                                                  </span>
+                                  
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">namespace</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_apiClusterClusterNameResourceResourceNameGet_namespace">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 500 - Internal Server Error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiClusterClusterNameResourceResourceNameGet-500-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiClusterClusterNameResourceResourceNameGet-500-schema">
+                                  <div id='responses-apiClusterClusterNameResourceResourceNameGet-500-schema-500' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Internal Server Error",
+  "content" : {
+    "text/plain" : {
+      "schema" : {
+        "type" : "string",
+        "x-content-type" : "text/plain"
+      },
+      "examples" : {
+        "Example#1" : {
+          "value" : ""
+        },
+        "Example#2" : {
+          "value" : ""
+        }
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["text/plain"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiClusterClusterNameResourceResourceNameGet-500-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiClusterClusterNameResourceResourceNameGet-500-schema-500');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiClusterClusterNameResourceResourceNameGet-500-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 200 - OK </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-apiClusterClusterNameResourceResourceNameGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-apiClusterClusterNameResourceResourceNameGet-200-schema">
+                                  <div id='responses-apiClusterClusterNameResourceResourceNameGet-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "OK",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "string",
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-apiClusterClusterNameResourceResourceNameGet-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-apiClusterClusterNameResourceResourceNameGet-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-apiClusterClusterNameResourceResourceNameGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

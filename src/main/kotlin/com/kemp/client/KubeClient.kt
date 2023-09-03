@@ -1,5 +1,6 @@
 package com.kemp.client
 
+import com.google.gson.JsonParser
 import com.kemp.utils.asStringJson
 import com.kemp.utils.asStringJsonList
 import com.kemp.utils.getItem
@@ -71,6 +72,13 @@ class KubeClient(val client: ApiClient) {
         namespace: String? = ""
     ): String? {
         return listResources(resourcePlural, namespace)?.asStringJsonList()
+    }
+
+    fun createResource(json: String, resourcePlural: String) {
+        val resource = findAPIResource(resourcePlural)
+        val api = DynamicKubernetesApi(resource?.group, resource?.preferredVersion, resourcePlural, client)
+        val jsonObject = JsonParser.parseString(json).asJsonObject
+        api.create(DynamicKubernetesObject(jsonObject))
     }
 
     /**

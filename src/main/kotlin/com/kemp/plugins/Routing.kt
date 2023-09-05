@@ -20,7 +20,7 @@ fun Application.configureRouting() {
                     status = HttpStatusCode.fromValue(cause.statusCode)
                 )
             } else {
-                call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
+                call.respondText(text = "$cause")
             }
         }
     }

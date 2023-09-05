@@ -7,10 +7,12 @@ import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
 
 fun KubernetesApiResponse<DynamicKubernetesListObject>.getItems(): List<DynamicKubernetesObject>? {
+    this.throwsApiException()
     return if (this.isSuccess) this.`object`.items else null
 }
 
 fun KubernetesApiResponse<DynamicKubernetesObject>.getItem(): DynamicKubernetesObject? {
+    this.throwsApiException()
     return if (this.isSuccess) this.`object` else null
 }
 

@@ -5,6 +5,18 @@ import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.util.ClientBuilder
 import io.kubernetes.client.util.Config
 
+/* This class was created just for testing multiple clusters. However, how we should manage the real multi cluster ?
+all kubernetes cluster are not public so basically we really need to think if we should do push or pull model to get
+data from cluster.
+
+Pull model:
+
+Cluster <--- KEMP SaaS
+
+Push model:
+
+Cluster with KEMP Agent running -----> HEMP SaaS
+* */
 object KubeManager {
 
     // How to persistent data ? Database or directly as kubernetes objects ? or this should be implemented depending on the deployment type ?

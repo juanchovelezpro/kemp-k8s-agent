@@ -10,7 +10,6 @@ import io.kubernetes.client.custom.V1Patch
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.apis.VersionApi
 import io.kubernetes.client.openapi.models.VersionInfo
-import io.kubernetes.client.util.PatchUtils
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
 
@@ -67,7 +66,9 @@ class KubeClient(val client: ApiClient) {
     ): List<DynamicKubernetesObject>? {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
-        return if (namespace.isNullOrEmpty()) api.list().getItems() else api.list(namespace).getItems()
+        val result = if (namespace.isNullOrEmpty()) api.list() else api.list(namespace)
+        result.throwsApiException()
+        return result.getItems()
     }
 
     /**
@@ -82,18 +83,18 @@ class KubeClient(val client: ApiClient) {
         )
         val resource = findAPIResourceByKind(kind)
         val api = createDynamicApi(resource)
-        val result = api.create(DynamicKubernetesObject(jsonObject))
+        val result = api.create(DynamicKubernetesObject(jsonObject)).throwsApiException()
         return result.isSuccess
     }
 
     fun patchResource(json: String): Boolean {
         val jsonObject = JsonParser.parseString(json).asJsonObject
-        val name = jsonObject?.get("metadata")?.asJsonObject?.get("name")?.asString ?: throw GenericException(
+        val name = jsonObject.get("metadata").asJsonObject?.get("name")?.asString ?: throw GenericException(
             "JSON Object without metadata.name",
             400,
             "The name parameter in metadata could not be found"
         )
-        val kind = jsonObject?.get("kind")?.asString ?: throw GenericException(
+        val kind = jsonObject.get("kind")?.asString ?: throw GenericException(
             "JSON Object without kind",
             400,
             "The kind parameter could not be found."
@@ -102,19 +103,16 @@ class KubeClient(val client: ApiClient) {
         val api = createDynamicApi(resource)
 
         val result = if (resource.namespaced) {
-
             val namespace =
-                jsonObject?.get("metadata")?.asJsonObject?.get("namespace")?.asString ?: throw GenericException(
+                jsonObject.get("metadata")?.asJsonObject?.get("namespace")?.asString ?: throw GenericException(
                     "JSON Object without metadata.namespace",
                     400,
                     "The namespace parameter in metadata could not be found"
                 )
-            val k8sObject = getResource(resource.resourcePlural, name, namespace)
-            PatchUtils.patch(DynamicKubernetesObject::class.java, null, V1Patch.PATCH_FORMAT_APPLY_YAML, client)
-            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(jsonObject.asString))
+            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json)).throwsApiException()
+
         } else {
-            val k8sObject = getResource(resource.resourcePlural, name)
-            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(""))
+            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json)).throwsApiException()
         }
         return result.isSuccess
     }
@@ -129,16 +127,20 @@ class KubeClient(val client: ApiClient) {
     fun getResource(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
-        return if (namespace.isNullOrEmpty()) api.get(name).getItem() else api.get(namespace, name).getItem()
+        val result = if (namespace.isNullOrEmpty()) api.get(name) else api.get(namespace, name)
+        result.throwsApiException()
+        return result.getItem()
     }
 
     /**
      * This is a mimic of "kubectl delete resource"
      */
-    fun deleteResource(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
+    fun deleteResource(resourcePlural: String, name: String, namespace: String? = ""): Boolean {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
-        return if (namespace.isNullOrEmpty()) api.delete(name).getItem() else api.delete(namespace, name).getItem()
+        val result = if (namespace.isNullOrEmpty()) api.delete(name) else api.delete(namespace, name)
+        result.throwsApiException()
+        return result.isSuccess
     }
 
 }

@@ -6,10 +6,11 @@ import com.kemp.utils.getItem
 import com.kemp.utils.getItems
 import io.kubernetes.client.Discovery
 import io.kubernetes.client.Discovery.APIResource
+import io.kubernetes.client.custom.V1Patch
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.apis.VersionApi
 import io.kubernetes.client.openapi.models.VersionInfo
-import io.kubernetes.client.util.Yaml
+import io.kubernetes.client.util.PatchUtils
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
 
@@ -40,13 +41,17 @@ class KubeClient(val client: ApiClient) {
      */
     // How to handle when there are multiples resources but with a different group? For these cases should we do it by specifying the group too?
     // Or maybe should we return all resources with same resource name regardless of the group ? (Using all method)
-    fun findAPIResource(resourcePlural: String?): APIResource {
+    fun findAPIResource(resourcePlural: String): APIResource {
         return serverResources.find { it.resourcePlural == resourcePlural }
             ?: throw GenericException("Resource not found", 400, "There is no a resource with plural $resourcePlural")
     }
 
-    fun createDynamicApi(resourcePlural: String): DynamicKubernetesApi {
-        val resource = findAPIResource(resourcePlural)
+    fun findAPIResourceByKind(kind: String): APIResource {
+        return serverResources.find { it.kind == kind }
+            ?: throw GenericException("Resource not found", 400, "There is no a resource with kind $kind")
+    }
+
+    fun createDynamicApi(resource: APIResource): DynamicKubernetesApi {
         return DynamicKubernetesApi(resource.group, resource.preferredVersion, resource.resourcePlural, client)
     }
 
@@ -60,24 +65,58 @@ class KubeClient(val client: ApiClient) {
         resourcePlural: String,
         namespace: String? = ""
     ): List<DynamicKubernetesObject>? {
-        val api = createDynamicApi(resourcePlural)
+        val resource = findAPIResource(resourcePlural)
+        val api = createDynamicApi(resource)
         return if (namespace.isNullOrEmpty()) api.list().getItems() else api.list(namespace).getItems()
     }
 
     /**
      * This is a mimic of "kubectl create resource my-resource.yaml"
      */
-    fun createResource(resourcePlural: String, json: String): DynamicKubernetesObject? {
-        val api = createDynamicApi(resourcePlural)
+    fun createResource(json: String): Boolean {
         val jsonObject = JsonParser.parseString(json).asJsonObject
+        val kind = jsonObject?.get("kind")?.asString ?: throw GenericException(
+            "JSON Object without kind",
+            400,
+            "The kind parameter could not be found."
+        )
+        val resource = findAPIResourceByKind(kind)
+        val api = createDynamicApi(resource)
         val result = api.create(DynamicKubernetesObject(jsonObject))
-        return if (result.isSuccess) result.getItem() else throw Exception("Error creating object ${result.getItem()?.metadata?.name}")
+        return result.isSuccess
     }
 
-    fun patchResource(resourcePlural: String, json: String) {
-        val api = createDynamicApi(resourcePlural)
+    fun patchResource(json: String): Boolean {
         val jsonObject = JsonParser.parseString(json).asJsonObject
-        val yaml = Yaml.loadAs("", DynamicKubernetesObject::class.java)
+        val name = jsonObject?.get("metadata")?.asJsonObject?.get("name")?.asString ?: throw GenericException(
+            "JSON Object without metadata.name",
+            400,
+            "The name parameter in metadata could not be found"
+        )
+        val kind = jsonObject?.get("kind")?.asString ?: throw GenericException(
+            "JSON Object without kind",
+            400,
+            "The kind parameter could not be found."
+        )
+        val resource = findAPIResourceByKind(kind)
+        val api = createDynamicApi(resource)
+
+        val result = if (resource.namespaced) {
+
+            val namespace =
+                jsonObject?.get("metadata")?.asJsonObject?.get("namespace")?.asString ?: throw GenericException(
+                    "JSON Object without metadata.namespace",
+                    400,
+                    "The namespace parameter in metadata could not be found"
+                )
+            val k8sObject = getResource(resource.resourcePlural, name, namespace)
+            PatchUtils.patch(DynamicKubernetesObject::class.java, null, V1Patch.PATCH_FORMAT_APPLY_YAML, client)
+            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(jsonObject.asString))
+        } else {
+            val k8sObject = getResource(resource.resourcePlural, name)
+            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(""))
+        }
+        return result.isSuccess
     }
 
     fun applyResource() {
@@ -88,7 +127,8 @@ class KubeClient(val client: ApiClient) {
      * This is a mimic of "kubectl get resource resourceName"
      */
     fun getResource(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
-        val api = createDynamicApi(resourcePlural)
+        val resource = findAPIResource(resourcePlural)
+        val api = createDynamicApi(resource)
         return if (namespace.isNullOrEmpty()) api.get(name).getItem() else api.get(namespace, name).getItem()
     }
 
@@ -96,7 +136,8 @@ class KubeClient(val client: ApiClient) {
      * This is a mimic of "kubectl delete resource"
      */
     fun deleteResource(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
-        val api = createDynamicApi(resourcePlural)
+        val resource = findAPIResource(resourcePlural)
+        val api = createDynamicApi(resource)
         return if (namespace.isNullOrEmpty()) api.delete(name).getItem() else api.delete(namespace, name).getItem()
     }
 

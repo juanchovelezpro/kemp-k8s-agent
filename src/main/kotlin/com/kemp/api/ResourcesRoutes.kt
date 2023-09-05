@@ -5,6 +5,7 @@ import com.kemp.utils.asStringJson
 import com.kemp.utils.asStringJsonList
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -37,6 +38,41 @@ fun Route.resources() {
                     }
                 }
                 call.respondNullable(resource)
+            }
+        }
+        route("/resource") {
+            post {
+                val resource = call.receive<String>()
+                val result = call.parameters["cluster"]?.let { cluster ->
+                    KubeManager.getClient(cluster).createResource(resource)
+                } ?: false
+                if (result) call.respondText(
+                    "The resource was created",
+                    ContentType.Application.Json,
+                    status = HttpStatusCode.OK
+                )
+                else call.respondText(
+                    "The resource could not be created",
+                    ContentType.Application.Json,
+                    status = HttpStatusCode.BadRequest
+                )
+            }
+
+            patch {
+                val resource = call.receive<String>()
+                val result = call.parameters["cluster"]?.let { cluster ->
+                    KubeManager.getClient(cluster).patchResource(resource)
+                } ?: false
+                if (result) call.respondText(
+                    "The resource was patched",
+                    ContentType.Application.Json,
+                    status = HttpStatusCode.OK
+                )
+                else call.respondText(
+                    "The resource could not be patched",
+                    ContentType.Application.Json,
+                    status = HttpStatusCode.BadRequest
+                )
             }
         }
     }

@@ -97,17 +97,16 @@ class KubeClient(val client: ApiClient) {
         return result.isSuccess
     }
 
+    /**
+     * This is a mimic of kubectl apply my-resource.yaml
+     */
     fun applyResource(json: String, fieldManager: String = "kemp-apply", force: Boolean = false): Boolean {
         val jsonObject = JsonParser.parseString(json).asJsonObject
         val apiVersion = jsonObject.get("apiVersion").asString ?: ""
-        val apiVersionSplit = apiVersion.split("/")
-        if (apiVersionSplit.size != 2) throw GenericException(
-            "Malformed apiVersion",
-            400,
-            "apiVersion not in from GROUP/VERSION"
-        )
-        val group = apiVersionSplit[0]
-        val version = apiVersionSplit[1]
+        val hasGroupAndVersion = apiVersion.contains("/")
+        val apiVersionSplit = if (hasGroupAndVersion) apiVersion.split("/") else listOf(apiVersion)
+        val group = if (hasGroupAndVersion) apiVersionSplit[0] else ""
+        val version = if (hasGroupAndVersion) apiVersionSplit[1] else apiVersion
         val kind = jsonObject.get("kind").asString ?: ""
         val name = jsonObject.get("metadata").asJsonObject.get("name").asString ?: ""
         val resource = findAPIResourceByGroupVersionKind(group, version, kind)

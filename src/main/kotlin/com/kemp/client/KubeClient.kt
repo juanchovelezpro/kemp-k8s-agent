@@ -104,11 +104,12 @@ class KubeClient(val client: ApiClient) {
         val jsonObject = JsonParser.parseString(json).asJsonObject
         val apiVersion = jsonObject.get("apiVersion").asString ?: ""
         val hasGroupAndVersion = apiVersion.contains("/")
-        val apiVersionSplit = if (hasGroupAndVersion) apiVersion.split("/") else listOf(apiVersion)
+        val apiVersionSplit = apiVersion.split("/")
         val group = if (hasGroupAndVersion) apiVersionSplit[0] else ""
         val version = if (hasGroupAndVersion) apiVersionSplit[1] else apiVersion
         val kind = jsonObject.get("kind").asString ?: ""
-        val name = jsonObject.get("metadata").asJsonObject.get("name").asString ?: ""
+        val metadata = jsonObject.get("metadata").asJsonObject
+        val name = metadata.get("name").asString ?: ""
         val resource = findAPIResourceByGroupVersionKind(group, version, kind)
         val api = DynamicKubernetesApi(resource.group, version, resource.resourcePlural, client)
         val patchOptions = PatchOptions()
@@ -117,7 +118,7 @@ class KubeClient(val client: ApiClient) {
             this.fieldManager = fieldManager
         }
         val result = if (resource.namespaced) {
-            val namespace = jsonObject.get("metadata").asJsonObject.get("namespace").asString ?: ""
+            val namespace = metadata.get("namespace").asString ?: ""
             api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json), patchOptions)
         } else {
             api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json), patchOptions)

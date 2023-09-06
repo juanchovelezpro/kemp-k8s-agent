@@ -143,7 +143,7 @@ paths:
             text/plain:
               schema:
                 type: "string"
-  /api/clusters/{cluster}/resource:
+  /api/clusters/{cluster}/resource/json:
     post:
       description: ""
       parameters:
@@ -168,9 +168,40 @@ paths:
               examples:
                 Example#1:
                   value: "The resource was applied"
-            text/plain:
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
               schema:
                 type: "string"
+              examples:
+                Example#1:
+                  value: "The resource could not be applied"
+  /api/clusters/{cluster}/resource/yaml:
+    post:
+      description: ""
+      parameters:
+      - name: "cluster"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "The resource was applied"
         "400":
           description: "Bad Request"
           content:

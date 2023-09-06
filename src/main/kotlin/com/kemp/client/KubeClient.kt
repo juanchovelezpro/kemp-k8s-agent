@@ -2,10 +2,11 @@ package com.kemp.client
 
 import com.google.gson.JsonParser
 import com.kemp.model.GenericException
-import com.kemp.utils.getItem
-import com.kemp.utils.getItems
+import com.kemp.model.KubeFormatType
+import com.kemp.utils.*
 import io.kubernetes.client.Discovery
 import io.kubernetes.client.Discovery.APIResource
+import io.kubernetes.client.apimachinery.GroupVersionKind
 import io.kubernetes.client.custom.V1Patch
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.apis.VersionApi
@@ -48,19 +49,18 @@ class KubeClient(val client: ApiClient) {
 
     fun findAPIResourceByKind(kind: String): APIResource {
         return serverResources.find { it.kind == kind } ?: throw GenericException(
-            "Resource not found",
-            404,
-            "There is no a resource with kind $kind"
+            "Resource not found", 404, "There is no a resource with kind $kind"
         )
     }
 
-    fun findAPIResourceByGroupVersionKind(group: String, version: String, kind: String): APIResource {
+    fun findAPIResourceByGroupVersionKind(groupVersionKind: GroupVersionKind): APIResource {
+        val group = groupVersionKind.group
+        val version = groupVersionKind.version
+        val kind = groupVersionKind.kind
         return serverResources.find {
             it.kind == kind && it.group == group && it.versions.contains(version)
         } ?: throw GenericException(
-            "Resource not found",
-            404,
-            "There is no a resource with group: $group, version: $version and kind: $kind"
+            "Resource not found", 404, "There is no a resource with group: $group, version: $version and kind: $kind"
         )
     }
 
@@ -100,28 +100,30 @@ class KubeClient(val client: ApiClient) {
     /**
      * This is a mimic of kubectl apply my-resource.yaml
      */
-    fun applyResource(json: String, fieldManager: String = "kemp-apply", force: Boolean = false): Boolean {
-        val jsonObject = JsonParser.parseString(json).asJsonObject
-        val apiVersion = jsonObject.get("apiVersion").asString ?: ""
-        val hasGroupAndVersion = apiVersion.contains("/")
-        val apiVersionSplit = apiVersion.split("/")
-        val group = if (hasGroupAndVersion) apiVersionSplit[0] else ""
-        val version = if (hasGroupAndVersion) apiVersionSplit[1] else apiVersion
-        val kind = jsonObject.get("kind").asString ?: ""
-        val metadata = jsonObject.get("metadata").asJsonObject
-        val name = metadata.get("name").asString ?: ""
-        val resource = findAPIResourceByGroupVersionKind(group, version, kind)
-        val api = DynamicKubernetesApi(resource.group, version, resource.resourcePlural, client)
+    fun applyObject(
+        objectConfiguration: String,
+        format: KubeFormatType,
+        fieldManager: String = "kemp-apply",
+        force: Boolean = false
+    ): Boolean {
+        val dynamicObject = loadDynamicK8sObject(objectConfiguration, format)
+        val groupVersionKind = dynamicObject.getGroupVersionKind()
+        val metadata = dynamicObject.metadata
+        val name = metadata.name
+        val resource = findAPIResourceByGroupVersionKind(groupVersionKind)
+        val api = DynamicKubernetesApi(resource.group, groupVersionKind.version, resource.resourcePlural, client)
         val patchOptions = PatchOptions()
         patchOptions.apply {
             this.force = force
             this.fieldManager = fieldManager
         }
         val result = if (resource.namespaced) {
-            val namespace = metadata.get("namespace").asString ?: ""
-            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json), patchOptions)
+            val namespace = metadata.namespace
+            api.patch(
+                namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(dynamicObject.asStringJson()), patchOptions
+            )
         } else {
-            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json), patchOptions)
+            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(dynamicObject.asStringJson()), patchOptions)
         }
         result.throwsApiException()
         return result.isSuccess
@@ -130,7 +132,7 @@ class KubeClient(val client: ApiClient) {
     /**
      * This is a mimic of "kubectl get resource resourceName"
      */
-    fun getResource(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
+    fun getObject(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
         val result = if (namespace.isNullOrEmpty()) api.get(name) else api.get(namespace, name)
@@ -140,7 +142,7 @@ class KubeClient(val client: ApiClient) {
     /**
      * This is a mimic of "kubectl delete resource"
      */
-    fun deleteResource(resourcePlural: String, name: String, namespace: String? = ""): Boolean {
+    fun deleteObject(resourcePlural: String, name: String, namespace: String? = ""): Boolean {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
         val result = if (namespace.isNullOrEmpty()) api.delete(name) else api.delete(namespace, name)

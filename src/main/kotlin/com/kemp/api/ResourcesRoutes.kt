@@ -1,6 +1,7 @@
 package com.kemp.api
 
 import com.kemp.client.KubeManager
+import com.kemp.model.KubeFormatType
 import com.kemp.utils.asStringJson
 import com.kemp.utils.asStringJsonList
 import io.ktor.http.*
@@ -21,7 +22,7 @@ fun Route.resources() {
                         if (resourceName.isNullOrEmpty()) {
                             KubeManager.getClient(cluster).listResources(resource, namespace)?.asStringJsonList()
                         } else {
-                            KubeManager.getClient(cluster).getResource(resource, resourceName, namespace)
+                            KubeManager.getClient(cluster).getObject(resource, resourceName, namespace)
                                 ?.asStringJson()
                         }
                     }
@@ -33,7 +34,7 @@ fun Route.resources() {
                 val resource = call.parameters["cluster"]?.let { cluster ->
                     call.parameters["resource"]?.let { resource ->
                         call.parameters["resourceName"]?.let { resourceName ->
-                            KubeManager.getClient(cluster).deleteResource(resource, resourceName, namespace)
+                            KubeManager.getClient(cluster).deleteObject(resource, resourceName, namespace)
                         }
                     }
                 }
@@ -41,22 +42,29 @@ fun Route.resources() {
             }
         }
         route("/resource") {
-            post {
-                val resource = call.receive<String>()
-                val result = call.parameters["cluster"]?.let { cluster ->
-                    KubeManager.getClient(cluster).applyResource(resource)
-                } ?: false
-                if (result) call.respondText(
-                    "The resource was applied",
-                    ContentType.Application.Json,
-                    status = HttpStatusCode.OK
-                )
-                else call.respondText(
-                    "The resource could not be applied",
-                    ContentType.Application.Json,
-                    status = HttpStatusCode.BadRequest
-                )
+            post("/yaml") {
+                handleApplyRequest(call, KubeFormatType.YAML)
+            }
+            post("/json") {
+                handleApplyRequest(call, KubeFormatType.JSON)
             }
         }
     }
+}
+
+suspend fun handleApplyRequest(call: ApplicationCall, formatType: KubeFormatType) {
+    val resource = call.receive<String>()
+    val result = call.parameters["cluster"]?.let { cluster ->
+        KubeManager.getClient(cluster).applyObject(resource, formatType)
+    } ?: false
+    if (result) call.respondText(
+        "The resource was applied",
+        ContentType.Application.Json,
+        status = HttpStatusCode.OK
+    )
+    else call.respondText(
+        "The resource could not be applied",
+        ContentType.Application.Json,
+        status = HttpStatusCode.BadRequest
+    )
 }

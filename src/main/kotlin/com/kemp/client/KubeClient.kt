@@ -12,6 +12,8 @@ import io.kubernetes.client.openapi.apis.VersionApi
 import io.kubernetes.client.openapi.models.VersionInfo
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
+import io.kubernetes.client.util.generic.options.CreateOptions
+import io.kubernetes.client.util.generic.options.PatchOptions
 
 class KubeClient(val client: ApiClient) {
 
@@ -34,7 +36,6 @@ class KubeClient(val client: ApiClient) {
         return discovery.findAll()
     }
 
-
     /**
      * Find a resource by its resourcePlural name.
      */
@@ -46,8 +47,21 @@ class KubeClient(val client: ApiClient) {
     }
 
     fun findAPIResourceByKind(kind: String): APIResource {
-        return serverResources.find { it.kind == kind }
-            ?: throw GenericException("Resource not found", 400, "There is no a resource with kind $kind")
+        return serverResources.find { it.kind == kind } ?: throw GenericException(
+            "Resource not found",
+            400,
+            "There is no a resource with kind $kind"
+        )
+    }
+
+    fun findAPIResourceByGroupVersionKind(group: String, version: String, kind: String): APIResource {
+        return serverResources.find {
+            it.kind == kind && it.group == group && it.versions.contains(version)
+        } ?: throw GenericException(
+            "Resource not found",
+            400,
+            "There is no a resource with group: $group, version: $version and kind: $kind"
+        )
     }
 
     fun createDynamicApi(resource: APIResource): DynamicKubernetesApi {
@@ -61,64 +75,56 @@ class KubeClient(val client: ApiClient) {
      */
     // Right now only filtering namespaced, what about labels, annotations, as kubectl does with selector.
     fun listResources(
-        resourcePlural: String,
-        namespace: String? = ""
+        resourcePlural: String, namespace: String? = ""
     ): List<DynamicKubernetesObject>? {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
         val result = if (namespace.isNullOrEmpty()) api.list() else api.list(namespace)
-        result.throwsApiException()
         return result.getItems()
     }
 
     /**
      * This is a mimic of "kubectl create resource my-resource.yaml"
      */
-    fun createResource(json: String): Boolean {
+    fun createResource(json: String, fieldManager: String = "kemp-apply"): Boolean {
         val jsonObject = JsonParser.parseString(json).asJsonObject
-        val kind = jsonObject?.get("kind")?.asString ?: throw GenericException(
-            "JSON Object without kind",
-            400,
-            "The kind parameter could not be found."
-        )
+        val kind = jsonObject?.get("kind")?.asString ?: ""
         val resource = findAPIResourceByKind(kind)
         val api = createDynamicApi(resource)
-        val result = api.create(DynamicKubernetesObject(jsonObject)).throwsApiException()
+        val createOptions = CreateOptions()
+        createOptions.fieldManager = fieldManager
+        val result = api.create(DynamicKubernetesObject(jsonObject), createOptions).throwsApiException()
         return result.isSuccess
     }
 
-    fun patchResource(json: String): Boolean {
+    fun applyResource(json: String, fieldManager: String = "kemp-apply", force: Boolean = false): Boolean {
         val jsonObject = JsonParser.parseString(json).asJsonObject
-        val name = jsonObject.get("metadata").asJsonObject?.get("name")?.asString ?: throw GenericException(
-            "JSON Object without metadata.name",
+        val apiVersion = jsonObject.get("apiVersion").asString ?: ""
+        val apiVersionSplit = apiVersion.split("/")
+        if (apiVersionSplit.size != 2) throw GenericException(
+            "Malformed apiVersion",
             400,
-            "The name parameter in metadata could not be found"
+            "apiVersion not in from GROUP/VERSION"
         )
-        val kind = jsonObject.get("kind")?.asString ?: throw GenericException(
-            "JSON Object without kind",
-            400,
-            "The kind parameter could not be found."
-        )
-        val resource = findAPIResourceByKind(kind)
+        val group = apiVersionSplit[0]
+        val version = apiVersionSplit[1]
+        val kind = jsonObject.get("kind").asString ?: ""
+        val name = jsonObject.get("metadata").asJsonObject.get("name").asString ?: ""
+        val resource = findAPIResourceByGroupVersionKind(group, version, kind)
         val api = createDynamicApi(resource)
-
-        val result = if (resource.namespaced) {
-            val namespace =
-                jsonObject.get("metadata")?.asJsonObject?.get("namespace")?.asString ?: throw GenericException(
-                    "JSON Object without metadata.namespace",
-                    400,
-                    "The namespace parameter in metadata could not be found"
-                )
-            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json)).throwsApiException()
-
-        } else {
-            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json)).throwsApiException()
+        val patchOptions = PatchOptions()
+        patchOptions.apply {
+            this.force = force
+            this.fieldManager = fieldManager
         }
+        val result = if (resource.namespaced) {
+            val namespace = jsonObject.get("metadata").asJsonObject.get("namespace").asString ?: ""
+            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json), patchOptions)
+        } else {
+            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(json), patchOptions)
+        }
+        result.throwsApiException()
         return result.isSuccess
-    }
-
-    fun applyResource() {
-        TODO("")
     }
 
     /**
@@ -128,7 +134,6 @@ class KubeClient(val client: ApiClient) {
         val resource = findAPIResource(resourcePlural)
         val api = createDynamicApi(resource)
         val result = if (namespace.isNullOrEmpty()) api.get(name) else api.get(namespace, name)
-        result.throwsApiException()
         return result.getItem()
     }
 

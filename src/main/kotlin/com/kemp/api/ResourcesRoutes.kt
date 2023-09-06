@@ -44,32 +44,15 @@ fun Route.resources() {
             post {
                 val resource = call.receive<String>()
                 val result = call.parameters["cluster"]?.let { cluster ->
-                    KubeManager.getClient(cluster).createResource(resource)
+                    KubeManager.getClient(cluster).applyResource(resource)
                 } ?: false
                 if (result) call.respondText(
-                    "The resource was created",
+                    "The resource was applied",
                     ContentType.Application.Json,
                     status = HttpStatusCode.OK
                 )
                 else call.respondText(
-                    "The resource could not be created",
-                    ContentType.Application.Json,
-                    status = HttpStatusCode.BadRequest
-                )
-            }
-
-            patch {
-                val resource = call.receive<String>()
-                val result = call.parameters["cluster"]?.let { cluster ->
-                    KubeManager.getClient(cluster).patchResource(resource)
-                } ?: false
-                if (result) call.respondText(
-                    "The resource was patched",
-                    ContentType.Application.Json,
-                    status = HttpStatusCode.OK
-                )
-                else call.respondText(
-                    "The resource could not be patched",
+                    "The resource could not be applied",
                     ContentType.Application.Json,
                     status = HttpStatusCode.BadRequest
                 )

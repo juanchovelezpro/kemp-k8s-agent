@@ -6,8 +6,8 @@ import io.kubernetes.client.util.ClientBuilder
 import io.kubernetes.client.util.Config
 
 /* This class was created just for testing multiple clusters. However, how we should manage the real multi cluster ?
-all kubernetes cluster are not public so basically we really need to think if we should do push or pull model to get
-data from cluster.
+all kubernetes cluster are not public, so basically we really need to think if we should do push or pull model to get
+data from cluster or maybe keep both models.
 
 Pull model:
 

@@ -110,7 +110,7 @@ class KubeClient(val client: ApiClient) {
         val kind = jsonObject.get("kind").asString ?: ""
         val name = jsonObject.get("metadata").asJsonObject.get("name").asString ?: ""
         val resource = findAPIResourceByGroupVersionKind(group, version, kind)
-        val api = createDynamicApi(resource)
+        val api = DynamicKubernetesApi(resource.group, version, resource.resourcePlural, client)
         val patchOptions = PatchOptions()
         patchOptions.apply {
             this.force = force

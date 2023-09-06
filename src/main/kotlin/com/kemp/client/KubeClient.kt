@@ -43,13 +43,13 @@ class KubeClient(val client: ApiClient) {
     // Or maybe should we return all resources with same resource name regardless of the group ? (Using all method)
     fun findAPIResource(resourcePlural: String): APIResource {
         return serverResources.find { it.resourcePlural == resourcePlural }
-            ?: throw GenericException("Resource not found", 400, "There is no a resource with plural $resourcePlural")
+            ?: throw GenericException("Resource not found", 404, "There is no a resource with plural $resourcePlural")
     }
 
     fun findAPIResourceByKind(kind: String): APIResource {
         return serverResources.find { it.kind == kind } ?: throw GenericException(
             "Resource not found",
-            400,
+            404,
             "There is no a resource with kind $kind"
         )
     }
@@ -59,7 +59,7 @@ class KubeClient(val client: ApiClient) {
             it.kind == kind && it.group == group && it.versions.contains(version)
         } ?: throw GenericException(
             "Resource not found",
-            400,
+            404,
             "There is no a resource with group: $group, version: $version and kind: $kind"
         )
     }

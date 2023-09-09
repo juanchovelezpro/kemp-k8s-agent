@@ -11,11 +11,11 @@ data from cluster or maybe keep both models.
 
 Pull model:
 
-Cluster <--- KEMP SaaS
+Cluster <--- KEMP PaaS
 
 Push model:
 
-Cluster with KEMP Agent running -----> HEMP SaaS
+Cluster with KEMP Agent running -----> KEMP PaaS
 * */
 object KubeManager {
 

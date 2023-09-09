@@ -1,9 +1,11 @@
 package com.kemp.client
 
-import com.google.gson.JsonParser
 import com.kemp.model.GenericException
 import com.kemp.model.KubeFormatType
-import com.kemp.utils.*
+import com.kemp.utils.getGroupVersionKind
+import com.kemp.utils.getItem
+import com.kemp.utils.getItems
+import com.kemp.utils.loadDynamicK8sObject
 import io.kubernetes.client.Discovery
 import io.kubernetes.client.Discovery.APIResource
 import io.kubernetes.client.apimachinery.GroupVersionKind
@@ -13,14 +15,15 @@ import io.kubernetes.client.openapi.apis.VersionApi
 import io.kubernetes.client.openapi.models.VersionInfo
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
-import io.kubernetes.client.util.generic.options.CreateOptions
+import io.kubernetes.client.util.generic.options.DeleteOptions
+import io.kubernetes.client.util.generic.options.GetOptions
+import io.kubernetes.client.util.generic.options.ListOptions
 import io.kubernetes.client.util.generic.options.PatchOptions
 
 class KubeClient(val client: ApiClient) {
 
     private val discovery: Discovery = Discovery(client)
     private val versionApi: VersionApi = VersionApi(client)
-    private val serverResources: Set<APIResource> = getServerResources()
 
     fun getServerVersion(): VersionInfo {
         return versionApi.code
@@ -31,70 +34,74 @@ class KubeClient(val client: ApiClient) {
      *
      * This is a mimic of "kubectl api-resources"
      */
-    // This only discovers resources when the client is created... how to update resources when there are new ones after the client is created ?
-    // The idea is not to call this every time we need to get a resource, only when is needed.
     fun getServerResources(): Set<APIResource> {
         return discovery.findAll()
     }
 
     /**
-     * Find a resource by its resourcePlural name.
+     * Find resources by their resourcePlural name.
      */
-    // How to handle when there are multiples resources but with a different group? For these cases should we do it by specifying the group too?
-    // Or maybe should we return all resources with same resource name regardless of the group ? (Using all method)
-    fun findAPIResource(resourcePlural: String): APIResource {
-        return serverResources.find { it.resourcePlural == resourcePlural }
-            ?: throw GenericException("Resource not found", 404, "There is no a resource with plural $resourcePlural")
-    }
-
-    fun findAPIResourceByKind(kind: String): APIResource {
-        return serverResources.find { it.kind == kind } ?: throw GenericException(
-            "Resource not found", 404, "There is no a resource with kind $kind"
+    fun findAPIResources(resourcePlural: String): List<APIResource> {
+        val resources = getServerResources().filter { it.resourcePlural == resourcePlural }
+        if (resources.isNotEmpty()) return resources else throw GenericException(
+            "Resources not found",
+            404,
+            "There are no resources with the specified plural name: $resourcePlural"
         )
     }
 
+    /**
+     * Find a resource by specifying its group, version and kind.
+     */
     fun findAPIResourceByGroupVersionKind(groupVersionKind: GroupVersionKind): APIResource {
         val group = groupVersionKind.group
         val version = groupVersionKind.version
         val kind = groupVersionKind.kind
-        return serverResources.find {
+        return getServerResources().find {
             it.kind == kind && it.group == group && it.versions.contains(version)
         } ?: throw GenericException(
             "Resource not found", 404, "There is no a resource with group: $group, version: $version and kind: $kind"
         )
     }
 
-    fun createDynamicApi(resource: APIResource): DynamicKubernetesApi {
-        return DynamicKubernetesApi(resource.group, resource.preferredVersion, resource.resourcePlural, client)
+    fun createDynamicApi(group: String, version: String, resourcePlural: String): DynamicKubernetesApi {
+        return DynamicKubernetesApi(group, version, resourcePlural, client)
     }
 
     /**
-     * List resources of the specified group, version and resourcePlural name.
+     * List resources (multiple resources from different groups) by its resourcePlural name.
      *
      * This is a mimic of "kubectl get resourcePlural"
      */
     // Right now only filtering namespaced, what about labels, annotations, as kubectl does with selector.
-    fun listResources(
-        resourcePlural: String, namespace: String? = ""
-    ): List<DynamicKubernetesObject>? {
-        val resource = findAPIResource(resourcePlural)
-        val api = createDynamicApi(resource)
-        val result = if (namespace.isNullOrEmpty()) api.list() else api.list(namespace)
-        return result.getItems()
+    fun listObjects(
+        resourcePlural: String,
+        namespace: String? = "",
+        listOptions: ListOptions
+    ): List<DynamicKubernetesObject> {
+        val resources = findAPIResources(resourcePlural)
+        return if (resources.size > 1) {
+            val objectsList = mutableListOf<DynamicKubernetesObject>()
+            resources.forEach {
+                objectsList.addAll(listObjects(it.group, it.preferredVersion, it.kind, namespace, listOptions))
+            }
+            objectsList
+        } else {
+            listObjects(resources[0].group, resources[0].preferredVersion, resources[0].kind, namespace, listOptions)
+        }
     }
 
-    /**
-     * This is a mimic of "kubectl create resource my-resource.yaml"
-     */
-    fun createResource(json: String, fieldManager: String = "kemp-apply"): Boolean {
-        val jsonObject = JsonParser.parseString(json).asJsonObject
-        val kind = jsonObject?.get("kind")?.asString ?: ""
-        val resource = findAPIResourceByKind(kind)
-        val api = createDynamicApi(resource)
-        val createOptions = CreateOptions()
-        createOptions.fieldManager = fieldManager
-        val result = api.create(DynamicKubernetesObject(jsonObject), createOptions).throwsApiException()
-        return result.isSuccess
+    fun listObjects(
+        group: String,
+        version: String,
+        kind: String,
+        namespace: String? = "",
+        listOptions: ListOptions
+    ): List<DynamicKubernetesObject> {
+        val resource = findAPIResourceByGroupVersionKind(GroupVersionKind(group, version, kind))
+        val api = createDynamicApi(resource.group, version, resource.resourcePlural)
+        val result = if (namespace.isNullOrEmpty()) api.list(listOptions) else api.list(namespace, listOptions)
+        return result.getItems()
     }
 
     /**
@@ -103,8 +110,7 @@ class KubeClient(val client: ApiClient) {
     fun applyObject(
         objectConfiguration: String,
         format: KubeFormatType,
-        fieldManager: String = "kemp-apply",
-        force: Boolean = false
+        patchOptions: PatchOptions
     ): Boolean {
         val dynamicObject = loadDynamicK8sObject(objectConfiguration, format)
         val groupVersionKind = dynamicObject.getGroupVersionKind()
@@ -112,18 +118,11 @@ class KubeClient(val client: ApiClient) {
         val name = metadata.name
         val resource = findAPIResourceByGroupVersionKind(groupVersionKind)
         val api = DynamicKubernetesApi(resource.group, groupVersionKind.version, resource.resourcePlural, client)
-        val patchOptions = PatchOptions()
-        patchOptions.apply {
-            this.force = force
-            this.fieldManager = fieldManager
-        }
         val result = if (resource.namespaced) {
             val namespace = metadata.namespace
-            api.patch(
-                namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(dynamicObject.asStringJson()), patchOptions
-            )
+            api.patch(namespace, name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(objectConfiguration), patchOptions)
         } else {
-            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(dynamicObject.asStringJson()), patchOptions)
+            api.patch(name, V1Patch.PATCH_FORMAT_APPLY_YAML, V1Patch(objectConfiguration), patchOptions)
         }
         result.throwsApiException()
         return result.isSuccess
@@ -132,20 +131,42 @@ class KubeClient(val client: ApiClient) {
     /**
      * This is a mimic of "kubectl get resource resourceName"
      */
-    fun getObject(resourcePlural: String, name: String, namespace: String? = ""): DynamicKubernetesObject? {
-        val resource = findAPIResource(resourcePlural)
-        val api = createDynamicApi(resource)
-        val result = if (namespace.isNullOrEmpty()) api.get(name) else api.get(namespace, name)
+    fun getObject(
+        group: String,
+        version: String,
+        resourcePlural: String,
+        name: String,
+        namespace: String? = "",
+        getOptions: GetOptions
+    ): DynamicKubernetesObject? {
+        //val resource = findAPIResourceByGroupVersionKind(GroupVersionKind(group, version, resourcePlural))
+        val api = createDynamicApi(group, version, resourcePlural)
+        val result = if (namespace.isNullOrEmpty()) {
+            api.get(name, getOptions)
+        } else {
+            api.get(namespace, name, getOptions)
+        }
         return result.getItem()
     }
 
     /**
      * This is a mimic of "kubectl delete resource"
      */
-    fun deleteObject(resourcePlural: String, name: String, namespace: String? = ""): Boolean {
-        val resource = findAPIResource(resourcePlural)
-        val api = createDynamicApi(resource)
-        val result = if (namespace.isNullOrEmpty()) api.delete(name) else api.delete(namespace, name)
+    fun deleteObject(
+        group: String,
+        version: String,
+        resourcePlural: String,
+        name: String,
+        namespace: String? = "",
+        deleteOptions: DeleteOptions
+    ): Boolean {
+        //val resource = findAPIResourceByGroupVersionKind(GroupVersionKind(group, version, resourcePlural))
+        val api = createDynamicApi(group, version, resourcePlural)
+        val result = if (namespace.isNullOrEmpty()) {
+            api.delete(name, deleteOptions)
+        } else {
+            api.delete(namespace, name, deleteOptions)
+        }
         result.throwsApiException()
         return result.isSuccess
     }

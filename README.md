@@ -1,7 +1,7 @@
 # KEMP API 
-Kubernetes API developed in Kotlin using the Official Kubernetes Java Client
+Agent to consume developed in Kotlin Kubernetes API  using the Official Kubernetes Java Client
 
-## How to run and test the API ?
+## How to run and test the Agent ?
 
 ### Tools 
 
@@ -14,6 +14,6 @@ You can execute the next command to create a kubernetes cluster using minikube.
 
 `minikube start -p k8s-test`
 
-Run the API using IntelliJ IDEA.
+Run the Agent locally using IntelliJ IDEA or install Agent in the cluster
 
-Now you can start playing with the API.
+Now you can start playing with the Agent.

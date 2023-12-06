@@ -13,6 +13,7 @@ import io.kubernetes.client.custom.V1Patch
 import io.kubernetes.client.openapi.ApiClient
 import io.kubernetes.client.openapi.apis.VersionApi
 import io.kubernetes.client.openapi.models.VersionInfo
+import io.kubernetes.client.util.ClientBuilder
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
 import io.kubernetes.client.util.generic.options.DeleteOptions
@@ -20,8 +21,9 @@ import io.kubernetes.client.util.generic.options.GetOptions
 import io.kubernetes.client.util.generic.options.ListOptions
 import io.kubernetes.client.util.generic.options.PatchOptions
 
-class KubeClient(val client: ApiClient) {
+class KubeClient() {
 
+    private val client: ApiClient = ClientBuilder.defaultClient()
     private val discovery: Discovery = Discovery(client)
     private val versionApi: VersionApi = VersionApi(client)
 

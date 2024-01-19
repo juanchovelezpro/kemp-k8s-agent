@@ -29,6 +29,7 @@ fun main() {
         //val kempClient = KempClient(client)
         val session = client.webSocketSession {
             url("ws://127.0.0.1:8080/link")
+            headers["type"] = "agent"
             headers["name"] = "kemp-agent"
             headers.build()
         }

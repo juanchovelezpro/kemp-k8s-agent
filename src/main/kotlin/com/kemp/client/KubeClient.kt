@@ -2,10 +2,7 @@ package com.kemp.client
 
 import com.kemp.model.GenericException
 import com.kemp.model.KubeFormatType
-import com.kemp.utils.getGroupVersionKind
-import com.kemp.utils.getItem
-import com.kemp.utils.getItems
-import com.kemp.utils.loadDynamicK8sObject
+import com.kemp.utils.*
 import io.kubernetes.client.Discovery
 import io.kubernetes.client.Discovery.APIResource
 import io.kubernetes.client.apimachinery.GroupVersionKind
@@ -80,7 +77,7 @@ class KubeClient {
         resourcePlural: String,
         aggregateResources: Boolean = false,
         namespace: String? = "",
-        listOptions: ListOptions
+        listOptions: ListOptions = ListOptions().default()
     ): List<DynamicKubernetesObject> {
         val resources = findAPIResources(resourcePlural)
         return if(aggregateResources) {
@@ -102,7 +99,7 @@ class KubeClient {
         version: String,
         kind: String,
         namespace: String? = "",
-        listOptions: ListOptions
+        listOptions: ListOptions = ListOptions().default()
     ): List<DynamicKubernetesObject> {
         val resource = findAPIResourceByGroupVersionKind(GroupVersionKind(group, version, kind))
         val api = createDynamicApi(resource.group, version, resource.resourcePlural)
@@ -116,7 +113,7 @@ class KubeClient {
     fun applyObject(
         objectConfiguration: String,
         format: KubeFormatType,
-        patchOptions: PatchOptions
+        patchOptions: PatchOptions = PatchOptions().default()
     ): Boolean {
         val dynamicObject = loadDynamicK8sObject(objectConfiguration, format)
         val groupVersionKind = dynamicObject.getGroupVersionKind()
@@ -143,7 +140,7 @@ class KubeClient {
         resourcePlural: String,
         name: String,
         namespace: String? = "",
-        getOptions: GetOptions
+        getOptions: GetOptions = GetOptions().default()
     ): DynamicKubernetesObject? {
         //val resource = findAPIResourceByGroupVersionKind(GroupVersionKind(group, version, resourcePlural))
         val api = createDynamicApi(group, version, resourcePlural)
@@ -164,7 +161,7 @@ class KubeClient {
         resourcePlural: String,
         name: String,
         namespace: String? = "",
-        deleteOptions: DeleteOptions
+        deleteOptions: DeleteOptions = DeleteOptions().default()
     ): Boolean {
         //val resource = findAPIResourceByGroupVersionKind(GroupVersionKind(group, version, resourcePlural))
         val api = createDynamicApi(group, version, resourcePlural)

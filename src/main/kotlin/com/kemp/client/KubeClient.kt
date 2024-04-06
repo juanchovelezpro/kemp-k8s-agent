@@ -71,28 +71,32 @@ class KubeClient {
     }
 
     /**
-     * List resources (multiple resources from different groups) by its resourcePlural name.
-     *
-     * This is a mimic of "kubectl get resourcePlural"
+     * List resources by its resourcePlural name.
+     * It can aggregate multiples resources from different groups.
+     * If aggregate is not enabled, then the first resource found will be returned
      */
     // Right now only filtering namespaced, what about labels, annotations, as kubectl does with selector.
     fun listObjects(
         resourcePlural: String,
+        aggregateResources: Boolean = false,
         namespace: String? = "",
         listOptions: ListOptions
     ): List<DynamicKubernetesObject> {
         val resources = findAPIResources(resourcePlural)
-        return if (resources.size > 1) {
-            val objectsList = mutableListOf<DynamicKubernetesObject>()
-            resources.forEach {
-                objectsList.addAll(listObjects(it.group, it.preferredVersion, it.kind, namespace, listOptions))
-            }
-            objectsList
-        } else {
+        return if(aggregateResources) {
+                val objectsList = mutableListOf<DynamicKubernetesObject>()
+                resources.forEach {
+                    objectsList.addAll(listObjects(it.group, it.preferredVersion, it.kind, namespace, listOptions))
+                }
+                objectsList
+        }else {
             listObjects(resources[0].group, resources[0].preferredVersion, resources[0].kind, namespace, listOptions)
         }
     }
 
+    /**
+     * This is a mimic of "kubectl get resourcePlural"
+     */
     fun listObjects(
         group: String,
         version: String,

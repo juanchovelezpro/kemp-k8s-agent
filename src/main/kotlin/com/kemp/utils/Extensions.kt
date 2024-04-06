@@ -3,9 +3,7 @@ package com.kemp.utils
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.kemp.model.KubeFormatType
-import io.ktor.websocket.*
 import io.kubernetes.client.apimachinery.GroupVersionKind
-import io.kubernetes.client.proto.Meta.GetOptions
 import io.kubernetes.client.util.generic.KubernetesApiResponse
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
@@ -55,8 +53,4 @@ fun DynamicKubernetesObject.asStringJson(): String {
 
 fun Any.toJson(): String {
     return Gson().toJson(this)
-}
-
-fun String.asFrameText(): Frame.Text {
-    return Frame.Text(this)
 }

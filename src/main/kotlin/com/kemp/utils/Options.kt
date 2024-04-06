@@ -9,14 +9,14 @@ fun PatchOptions.default(): PatchOptions {
     return this.dryRun("none").fieldManager("kemp").force(false)
 }
 
-fun DeleteOptions.default(){
+fun DeleteOptions.default() {
 
 }
 
-fun GetOptions.default(){
+fun GetOptions.default() {
 
 }
 
-fun ListOptions.default(){
+fun ListOptions.default() {
 
 }

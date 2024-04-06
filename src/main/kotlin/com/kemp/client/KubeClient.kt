@@ -21,7 +21,7 @@ import io.kubernetes.client.util.generic.options.GetOptions
 import io.kubernetes.client.util.generic.options.ListOptions
 import io.kubernetes.client.util.generic.options.PatchOptions
 
-class KubeClient() {
+class KubeClient {
 
     private val client: ApiClient = ClientBuilder.defaultClient()
     private val discovery: Discovery = Discovery(client)

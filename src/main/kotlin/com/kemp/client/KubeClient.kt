@@ -27,9 +27,9 @@ class KubeClient {
     private val discovery: Discovery = Discovery(client)
     private val versionApi: VersionApi = VersionApi(client)
 
-//    fun getServerVersion(): VersionInfo {
-//        return versionApi.code
-//    }
+    fun getServerVersion(): VersionInfo {
+        return versionApi.code.execute()
+    }
 
     /**
      * Discovers all resources available in the Kubernetes Cluster.

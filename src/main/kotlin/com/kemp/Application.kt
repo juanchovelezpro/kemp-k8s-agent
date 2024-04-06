@@ -1,21 +1,11 @@
 package com.kemp
 
-import com.kemp.plugins.configureHTTP
-import com.kemp.plugins.configureMonitoring
-import com.kemp.plugins.configureRouting
-import com.kemp.plugins.configureSerialization
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import com.kemp.client.KubeClient
+import com.kemp.utils.toJson
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
-}
+    val k8sClient = KubeClient()
+    println(k8sClient.getServerResources().toJson())
+    println(k8sClient.getServerVersion())
 
-fun Application.module() {
-    configureSerialization()
-    configureMonitoring()
-    configureHTTP()
-    configureRouting()
 }

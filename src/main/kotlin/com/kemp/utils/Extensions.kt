@@ -9,9 +9,9 @@ import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject
 import io.kubernetes.client.util.generic.dynamic.Dynamics
 
-fun KubernetesApiResponse<DynamicKubernetesListObject>.getItems(): List<DynamicKubernetesObject>? {
+fun KubernetesApiResponse<DynamicKubernetesListObject>.getItems(): List<DynamicKubernetesObject> {
     this.throwsApiException()
-    return if (this.isSuccess) this.`object`.items else null
+    return if (this.isSuccess) this.`object`.items else emptyList()
 }
 
 fun KubernetesApiResponse<DynamicKubernetesObject>.getItem(): DynamicKubernetesObject? {

@@ -3,9 +3,9 @@ val kotlin_version: String by project
 val logback_version: String by project
 
 plugins {
-    kotlin("jvm") version "1.9.21"
-    id("io.ktor.plugin") version "2.3.6"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
+    kotlin("jvm") version "2.0.21"
+    id("io.ktor.plugin") version "3.0.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
 
 group = "com.kemp"
@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
-    implementation("io.kubernetes:client-java:20.0.1")
+    implementation("io.kubernetes:client-java:21.0.1")
+    implementation("io.ktor:ktor-client-websockets:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

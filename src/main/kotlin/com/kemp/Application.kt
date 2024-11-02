@@ -1,33 +1,50 @@
 package com.kemp
 
-import com.kemp.client.KubeClient
-import com.kemp.model.KubeFormatType
-import com.kemp.utils.asJsonList
-import com.kemp.utils.toJson
-import io.kubernetes.client.util.generic.options.ListOptions
-import io.kubernetes.client.util.generic.options.PatchOptions
+import com.kemp.model.Command
+import com.kemp.model.Response
+import io.ktor.client.*
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.websocket.*
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 fun main() {
-    val k8sClient = KubeClient()
-    val serverResources = k8sClient.getServerResources()
-    for(resource in serverResources){
-        print("${resource.resourcePlural} ")
+    val client = HttpClient(CIO) {
+        install(WebSockets) {
+            contentConverter = KotlinxWebsocketSerializationConverter(Json)
+            maxFrameSize = Long.MAX_VALUE
+            //pingInterval = 5.toDuration(DurationUnit.SECONDS)
+        }
     }
-    println()
-    println(k8sClient.getServerVersion().gitVersion)
-    val objects = k8sClient.listObjects("configmaps", namespace = "kube-system")
-    for(obj in objects){
-        println(obj.metadata.name)
+
+    val commandHandlers: Map<String, suspend (DefaultClientWebSocketSession, String) -> Unit> = mapOf(
+        "ping" to ::ping
+    )
+
+    runBlocking {
+        client.webSocket("ws://localhost:8080/connect") {
+            while (true) {
+                incoming.consumeEach {
+                    val command = receiveDeserialized<Command>()
+                    val handler = commandHandlers[command.type]
+                    println(handler)
+                    if (handler != null) {
+                        handler(this, command.details)
+                    } else {
+                        println("No handler found for command type: ${command.type}")
+                    }
+                }
+            }
+        }
     }
-    val objectToCreate = """
-        apiVersion: v1
-        kind: Namespace
-        metadata:
-          name: example
-    """.trimIndent()
-    k8sClient.applyObject(objectToCreate, KubeFormatType.YAML)
-    val namespaces = k8sClient.listObjects("namespaces")
-    for(ns in namespaces){
-        println(ns.metadata.name)
-    }
+}
+
+suspend fun ping(session: DefaultClientWebSocketSession, details: String) {
+    println("Handle Ping with details: $details")
+    val response = Response("pong", "Pong Response")
+    session.sendSerialized(response)
 }
